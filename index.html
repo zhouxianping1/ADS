@@ -21,7 +21,7 @@
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans CJK","Helvetica Neue",Arial,"Noto Sans",sans-serif}
-  header{padding:24px 20px 0}
+  header{padding:24px 20px 0; position: relative;} /* 让右上角按钮可绝对定位在header内 */
   h1{margin:0 0 6px;font-weight:700;font-size:28px}
   h2{margin:28px 0 12px;font-size:20px}
   h3{margin:18px 0 10px;font-size:18px}
@@ -42,6 +42,66 @@
   .toc a:hover{text-decoration:underline}
   code{background:#0B1220;border:1px solid var(--grid);border-radius:6px;padding:2px 6px;color:#E2E8F0}
   .footer{margin-top:18px;color:var(--mut);font-size:12px}
+
+  /* ===== 右上角「优化指南」按钮 + 折叠面板 ===== */
+  .top-right-tools{
+    position:absolute;
+    top: 4px;            /* 可按需微调，适配你截图的红框 */
+    right: 20px;
+    z-index: 50;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:10px;
+  }
+  .btn-guide{
+    padding:10px 14px;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:10px;
+    background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    backdrop-filter: blur(6px);
+    color:#cfe3ff;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .btn-guide:hover{ opacity:.92 }
+
+  .guide-panel{
+    width: 360px;                /* 右侧卡片宽度，可按需改 */
+    max-width: 40vw;
+    display:none;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:12px;
+    background:#0f172a;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+  }
+  .guide-panel.show{ display:block }
+  .guide-panel header{
+    padding:12px 14px 6px;
+    font-weight:600;
+    color:#e2e8f0;
+    font-size:15px;
+  }
+  .guide-panel .content{
+    padding: 0 14px 10px;
+    color:#94a3b8;
+    font-size:13px;
+    line-height:1.55;
+  }
+  .guide-panel .links{
+    padding: 8px 14px 14px;
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .chip{
+    padding:6px 10px; border-radius:999px; font-size:12px;
+    background:rgba(59,130,246,.12); color:#93c5fd; text-decoration:none;
+  }
+  .chip:hover{ filter:brightness(1.08) }
+  @media (max-width: 900px) {
+    .top-right-tools{ position:static; margin:10px 0 0; align-items:stretch; }
+    .guide-panel{ width:100%; max-width:unset }
+  }
+
   @media print{
     body{background:#fff;color:#111}
     .card{page-break-inside:avoid;border-color:#e5e7eb;background:#fff}
@@ -56,7 +116,29 @@
   <header class="container">
     <h1>越南 TikTok Shop · 美妆护肤广告对标<span class="pill">Dark · Skincare Ad Benchmarks (VN)</span></h1>
     <div class="mut">覆盖 CPM / CTR / CPC / VTR≥3s / PDP 转化（加购 & 下单）/ 评论互动率 · 夜间深色主题</div>
-    <nav class="toc">
+
+    <!-- 右上角按钮 + 折叠面板（红框区域） -->
+    <div class="top-right-tools" aria-live="polite">
+      <button id="btnGuide" class="btn-guide" aria-expanded="false" aria-controls="guidePanel">
+        ⚡ 优化指南 / Hướng dẫn
+      </button>
+      <section id="guidePanel" class="guide-panel" role="region" aria-label="优化指南">
+        <header>快速优化要点 · Quick Fix</header>
+        <div class="content">
+          • CTR &gt; 1.5%，CPC &lt; $0.22，VTR≥3s &gt; 38%<br/>
+          • 创意：封面大字 + 前3秒关键词 + 人脸近景 + 粗字幕<br/>
+          • 定向：CPM &gt; $6 放宽语言=All；兴趣≤2个宽词（Skincare）<br/>
+          • PDP：券/赠/包邮 + 卖点图 + 评价锚点；默认主推 SKU
+        </div>
+        <div class="links">
+          <a class="chip" href="#quick" onclick="toggleGuide(false)">速查键值</a>
+          <a class="chip" href="#playbook" onclick="toggleGuide(false)">排查步骤</a>
+          <a class="chip" href="dashboard.html" rel="noopener">查看完整看板 →</a>
+        </div>
+      </section>
+    </div>
+
+    <nav class="toc" style="margin-top:10px">
       <a href="#quick">① 速查键值</a>
       <a href="#use">② 怎么用</a>
       <a href="#bench">③ 行业对标表</a>
@@ -248,8 +330,19 @@
       </ul>
       <div class="footer">© VN TikTok Shop Skincare Playbook · 深色夜间版（1页）。</div>
     </section>
-  
 
   </main>
+
+  <script>
+    const btn = document.getElementById('btnGuide');
+    const panel = document.getElementById('guidePanel');
+    function toggleGuide(forceClose){
+      if(forceClose===false){ panel.classList.remove('show'); btn.setAttribute('aria-expanded','false'); return; }
+      panel.classList.toggle('show');
+      const expanded = panel.classList.contains('show');
+      btn.setAttribute('aria-expanded', expanded);
+    }
+    btn.addEventListener('click', () => toggleGuide());
+  </script>
 </body>
 </html>
